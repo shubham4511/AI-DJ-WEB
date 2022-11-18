@@ -9,23 +9,30 @@ scorerightWrits=0;
 song_peter_pen="";
 song_Harry_potter_Theme="";
 
+function preload(){
+  peter_pen_song=loadSound("music.mp3");
+  Harry_Potter_Theme_song=loadSound("music2.mp3");
+}
+
 function setup(){
   canvas=createCanvas(600,530);
   canvas.center();
   video=createCapture(VIDEO);
   video.hide();
-
+  poseNet = ml5.poseNet(video, modelLoaded);
+  poseNet.on('pose', gotPoses);
 }
+
+function modelLoaded(){
+  console.log("PoseNet Is initialized");
+}
+
 function draw(){
     image(video,0,0,600,530);
     fill("red");
     stroke("red");
     song_peter_pen=peter_pen_song.isplaying;
-    console.log("Peter Pen Song="+song_peter_pen);
-
     song_Harry_potter_Theme=Harry_Potter_Theme_song.isplaying;
-    console.log("Harry Potter Theme Song="+song_Harry_potter_Theme);
-
 
     if(scorerightWrits>0.2){
     circle(rightWritsX,rightWritsY,20);
@@ -47,10 +54,7 @@ if(scoreLeftWrits>0.2){
   }
   
 }
-function modelLoaded(){
-  console.log("PoseNet Is initialized");
 
-}
 function gotPoses(results){
   if(results.length >0){
     console.log(results);
@@ -61,27 +65,12 @@ function gotPoses(results){
      scorerightWrits=results[0].pose.keypoints[10].score;
      console.log("rightWrits_score="+scorerightWrits);
 
-     leftWrits_x=results[0].pose.leftWrits.x;
-     leftWrits_y=results[0].pose.leftWrits.y;
+     leftWrits_x=results[0].pose.leftWrist.x;
+     leftWrits_y=results[0].pose.leftWrist.y;
      console.log("leftWrits_x="+leftWrits_x+"leftWrits_y="+leftWrits_y);
 
-     rightWrits_x=results[0].pose.rightWrits.x;
-     rightWrits_y=results[0].pose.rightWrits.y;
+     rightWrits_x=results[0].pose.rightWrist.x;
+     rightWrits_y=results[0].pose.rightWrist.y;
      console.log("rightWrits_x="+rightWrits_x+"rightWrits_y="+rightWrits_y);
   }
-}
-
-
-
-function preload(){
-    peter_pen_song=loadSound("music.mp3");
-    Harry_Potter_Theme_song=loadSound("music2.mp3");
-}
-function setup(){
-  canvas=createCanvas(600,500);
-    canvas.center();
-    video=createCapture(VIDEO)
-    video.hide();
-    poseNet=ml5.poseNet(video,modelLoaded);
-    poseNet.on('pose',gotPoses);
 }
